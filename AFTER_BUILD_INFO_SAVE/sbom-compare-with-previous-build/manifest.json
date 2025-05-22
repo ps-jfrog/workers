@@ -1,0 +1,9 @@
+{
+    "name": "sbom-compare-with-previous-build",
+    "description": "This worker script is designed to handle comparing SBOM with the previous build in a JFrog Artifactory environment",
+    "secrets": {},
+    "sourceCodePath": "./worker.ts",
+    "action": "AFTER_BUILD_INFO_SAVE",
+    "enabled": true,
+    "debug": true
+}
