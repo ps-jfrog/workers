@@ -63,7 +63,7 @@ jobs:
           # jf config
           jf config show
 
-      - name: "NPM TypeScript: Prestep Summary "
+      - name: "Worker: ${{env.BUILD_NAME}} Summary "
         continue-on-error: true
         run: |
           echo "# :frog: NPM Prestep Summary :pushpin:" >> $GITHUB_STEP_SUMMARY
@@ -120,7 +120,7 @@ jobs:
         timeout-minutes: 15  
         continue-on-error: false    
         run: |
-          jf worker rm ${{env.WORKER_NAME}} 
+          jf worker rm ${{env.BUILD_NAME}} 
           jf worker ls
           
       - name: "Worker: deploy"
