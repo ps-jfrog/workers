@@ -11,12 +11,13 @@ permissions:
   security-events: write # Required for uploading code scanning.
 env:
   JF_RT_URL: "https://${{vars.JF_NAME}}.jfrog.io"
+  BUILD_ID: "ga-${{github.run_number}}"
   RT_REPO_VIRTUAL: "workers-npm-virtual"
   RT_REPO_DEFAULT_LOCAL: "workers-npm-snapshot-local"
   RT_REPO_DEV_LOCAL: "workers-npm-dev-local"
   RT_REPO_QA_LOCAL: "workers-npm-qa-local"
   RT_REPO_PROD_LOCAL: "workers-npm-prod-local"
-  BUILD_ID: "ga-${{github.run_number}}"
+  EVIDENCE_JSON: "wroker-evidence.json"
 jobs:
   sbomCompareWithPreviousBuild:
     name: "SBOM Compare With Previous Build"
@@ -142,3 +143,22 @@ jobs:
         continue-on-error: false
         run: jf rt bp ${{ env.BUILD_NAME}} ${{ env.BUILD_ID}} --detailed-summary=true
       
+      - name: "Optional: Add Builds to Indexing Configuration"
+        run: |
+          jf xr curl "/api/v1/binMgr/builds" -H 'Content-Type: application/json' -d '{"names": ["${{env.BUILD_NAME}}"] }'
+
+          sleep 30   # Sleeping for 20 seconds before executing the build publish seems to have resolved the build-scan issue. This delay might be helping with synchronization or resource availability, ensuring a smooth build process.
+
+      - name: "BuildInfo: Xray - Build scan"
+        timeout-minutes: 30
+        continue-on-error: true 
+        run: |
+          jf bs ${{env.BUILD_NAME}} ${{env.BUILD_ID}} --fail=false --format=table --extended-table=true --rescan=true --vuln=true
+      
+      - name: "Evidence: Build Publish"
+        continue-on-error: true 
+        run: |
+            echo '{ "actor": "${{github.actor}}", "pipeline": "github actions","build_name": "${{env.BUILD_NAME}}", "build_id": "${{env.BUILD_ID}}", "evd": "Evidence-BuildPublish"}' > ./${{env.EVIDENCE_JSON}}
+            cat ./${{env.EVIDENCE_JSON}}
+            jf evd create --build-name ${{env.BUILD_NAME}} --build-number ${{env.BUILD_ID}} --predicate ./${{env.EVIDENCE_JSON}} --predicate-type https://jfrog.com/evidence/build-signature/v1 --key "${{secrets.APP_JFROG_EVD_PRIVATEKEY}}" --key-alias ${{secrets.APP_EVIDENCE_KEY_ALIAS}}
+            # echo "    - Evidence for BUILD Publish attached. " >> $GITHUB_STEP_SUMMARY
