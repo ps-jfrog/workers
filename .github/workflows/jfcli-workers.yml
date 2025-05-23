@@ -73,11 +73,12 @@ jobs:
           echo " - $(jf --version) " >> $GITHUB_STEP_SUMMARY
           echo " - Node $(node -v) " >> $GITHUB_STEP_SUMMARY
           echo " - NPM $(npm -v) " >> $GITHUB_STEP_SUMMARY
-          echo " - Configured the JFrog Cli with SaaS Artifactory OIDC integration: ${{ vars.JF_OIDC_PROVIDER_NAME }} " >> $GITHUB_STEP_SUMMARY
+          echo " - Configured the JFrog Cli with ${{env.JF_RT_URL}} SaaS Artifactory OIDC integration: ${{ vars.JF_OIDC_PROVIDER_NAME }} " >> $GITHUB_STEP_SUMMARY
           echo " - Variables info" >> $GITHUB_STEP_SUMMARY
           echo "    - Build Name: ${{env.BUILD_NAME}} " >> $GITHUB_STEP_SUMMARY
           echo "    - ID: ${{env.BUILD_ID}} " >> $GITHUB_STEP_SUMMARY
           echo "    - Repo URL: ${{env.RT_REPO_VIRTUAL}}" >> $GITHUB_STEP_SUMMARY
+          echo " - Worker event deployed and edit link is [${{env.JF_RT_URL}}/ui/admin/workers/${{env.BUILD_NAME}}/edit](${{env.JF_RT_URL}}/ui/admin/workers/${{env.BUILD_NAME}}/edit)" >> $GITHUB_STEP_SUMMARY
           echo " " >> $GITHUB_STEP_SUMMARY
 
       # Package
