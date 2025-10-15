@@ -171,7 +171,7 @@ jobs:
       BUILD_NAME: "remote_repo_sync"
     defaults:
        run:
-         working-directory: "${{github.workspace}}/SCHEDULED_EVENT/remote_repo_sync"
+         working-directory: "${{github.workspace}}/SCHEDULED_EVENT/remote-repo-sync"
     timeout-minutes: 30 
     steps:
       # Use the specific setup-cli branch. Ref https://github.com/marketplace/actions/setup-jfrog-cli
